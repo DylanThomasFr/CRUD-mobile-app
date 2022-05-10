@@ -1,20 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import {createStackNavigator} from "react-navigation-stack"
+import {createAppContainer} from "react-navigation"
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+import IndexScreen from "./src/screens/IndexScreen"
+import ShowScreen from "./src/screens/ShowScreen"
+
+import {Provider as BlogProvider} from "./src/store/providers/BlogProvider"
+import CreateScreen from "./src/screens/CreateScreen";
+
+const App = createAppContainer(
+    createStackNavigator(
+        {
+            Index: IndexScreen,
+            Show: ShowScreen,
+            Form: CreateScreen
+        },
+        {
+            initialRouteName: 'Index',
+            defaultNavigationOptions: {
+                title: 'Skyblog'
+            }
+        }
+    )
+)
+
+export default () => {
+    return (
+        <BlogProvider>
+            <App />
+        </BlogProvider>
+    )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
