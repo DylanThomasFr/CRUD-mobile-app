@@ -1,11 +1,24 @@
-import {FlatList, Button, TouchableOpacity, StyleSheet} from 'react-native'
-import {useContext} from "react"
+import {FlatList, TouchableOpacity, StyleSheet} from 'react-native'
+import {useContext, useEffect} from "react"
 import {Context as BlogContext} from "../store/providers/BlogProvider"
 import {Feather} from "@expo/vector-icons"
-import Post from "../components/Post";
+import Post from "../components/Post"
 
 const IndexScreen = (props) => {
-    const {posts, removeBlogPost} = useContext(BlogContext)
+    const {posts, removeBlogPost, getBlogPosts} = useContext(BlogContext)
+
+    useEffect(() => {
+        getBlogPosts()
+
+        const listener = props.navigation.addListener('didFocus', () => {
+            getBlogPosts()
+        })
+
+        return () => {
+            listener.remove()
+        }
+    }, [])
+
     return (
         <>
             <FlatList

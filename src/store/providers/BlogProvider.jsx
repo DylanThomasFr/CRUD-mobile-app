@@ -1,4 +1,5 @@
 import createDataContext from "../createDataContext"
+import jsonServer from "../../api/jsonServer"
 
 const initialState = {
     posts: [],
@@ -9,6 +10,10 @@ const initialState = {
 
 const blogReducer = (state, action) => {
     switch (action.type) {
+        case 'GET' :
+            return {
+                posts: action.payload
+            }
         case 'ADD' :
             return {
                 posts: [
@@ -36,10 +41,36 @@ const blogReducer = (state, action) => {
             return state
     }
 }
+
+const getBlogPosts = dispatch => async () => {
+    const response = await jsonServer.get('/blogposts')
+    dispatch({type: 'GET', payload: response.data})
+}
+
+const addBlogPost = dispatch => async post => {
+    await jsonServer.post('/blogposts', post)
+    dispatch({type: 'ADD', payload: post})
+}
+
+const editBlogPost = dispatch => async post => {
+    await jsonServer.put(`/blogposts/${post.id}`, {
+        title: post.title,
+        content: post.content
+    })
+    dispatch({type: 'EDIT', payload: post})
+}
+
+const removeBlogPost = dispatch => async id => {
+    await jsonServer.delete(`/blogposts/${id}`)
+    dispatch({type: 'REMOVE', payload: id})
+}
+
+
 const actions = {
-    addBlogPost: dispatch => (post) => dispatch({type: 'ADD', payload: post}),
-    editBlogPost: dispatch => (post) => dispatch({type: 'EDIT', payload: post}),
-    removeBlogPost : dispatch => (id) => dispatch({type: 'REMOVE', payload: id})
+    getBlogPosts,
+    addBlogPost,
+    editBlogPost,
+    removeBlogPost
 }
 
 export const { Context, Provider } = createDataContext(blogReducer, actions, initialState)
